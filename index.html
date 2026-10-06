@@ -277,7 +277,7 @@ async function enviar(k){
 function paint(){
   const max=Math.max(1,...Object.values(votes));
   grid.querySelectorAll('.card').forEach(c=>{
-    const n=votes[c.dataset.n]||0;
+    const n=votes[c.dataset.comida]||0;
     c.classList.toggle('has',n>0);
     c.querySelector('.count b').textContent=n;
     c.querySelector('.count span').textContent=n===1?'voto':'votos';
@@ -285,7 +285,7 @@ function paint(){
   });
 }
 function vote(c,e){
-  const k=c.dataset.n;votes[k]=(votes[k]||0)+1;
+  const k=c.dataset.comida;votes[k]=(votes[k]||0)+1;
   if(sbOn) enviar(k); else {try{localStorage.setItem('votos',JSON.stringify(votes))}catch(x){}}
   paint();
   c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');
@@ -300,7 +300,7 @@ if(sbOn){document.getElementById('reset').parentElement.style.display='none';car
 function render(f){
   filtro=f;
   grid.innerHTML=comidas.filter(d=>f==='todos'||d.c===f).map(d=>`
-  <article class="card" tabindex="0" data-n="${d.n}" aria-label="${d.n}: toca para votar">
+  <article class="card" tabindex="0" data-comida="${d.n}" aria-label="${d.n}: toca para votar">
     <div class="cover" style="background-image:var(--leaves),linear-gradient(135deg,${d.g.split(',')[0]},${d.g.split(',')[1]})" aria-hidden="true">${d.e}</div>
     <div class="body">
       <h3>${d.n}</h3><div class="pais">${d.k}</div><p>${d.d}</p>
