@@ -256,13 +256,14 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sbOn=!SB_URL.includes('TU-PROYECTO');
 const SBH={apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'};
 let votes={};
+let filtro='todos';
 if(!sbOn){try{votes=JSON.parse(localStorage.getItem('votos'))||{}}catch(e){}}
 async function cargar(){
   if(!sbOn) return;
   try{
     const r=await fetch(SB_URL+'/rest/v1/votos?select=comida,total',{headers:SBH});
     (await r.json()).forEach(x=>votes[x.comida]=Math.max(votes[x.comida]||0,x.total));
-    paint();
+    if(!grid.children.length) render(filtro); else paint();
   }catch(e){}
 }
 async function enviar(k){
@@ -297,6 +298,7 @@ grid.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.
 document.getElementById('reset').onclick=()=>{votes={};try{localStorage.removeItem('votos')}catch(x){}paint()};
 if(sbOn){document.getElementById('reset').parentElement.style.display='none';cargar();setInterval(cargar,15000);}
 function render(f){
+  filtro=f;
   grid.innerHTML=comidas.filter(d=>f==='todos'||d.c===f).map(d=>`
   <article class="card" tabindex="0" data-n="${d.n}" aria-label="${d.n}: toca para votar">
     <div class="cover" style="background-image:var(--leaves),linear-gradient(135deg,${d.g.split(',')[0]},${d.g.split(',')[1]})" aria-hidden="true">${d.e}</div>
@@ -311,6 +313,7 @@ function render(f){
   paint();
 }
 render('todos');
+window.addEventListener('load',()=>{if(!grid.children.length) render(filtro);});
 grid.addEventListener('click',e=>{
   const b=e.target.closest('.more'); if(!b){const c=e.target.closest('.card'); if(c) vote(c,e); return;}
   const open=b.closest('.card').classList.toggle('open');
