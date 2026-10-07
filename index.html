@@ -142,6 +142,10 @@ footer{text-align:center;padding:30px 24px;color:var(--muted);font-size:.9rem;bo
 .plus{position:absolute;pointer-events:none;font-weight:800;font-size:1.4rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6);animation:up .7s forwards}
 @keyframes up{to{transform:translateY(-50px);opacity:0}}
 .more{position:relative;z-index:1}
+.cover{position:relative;overflow:hidden;height:190px}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.card:hover .cover img{transform:scale(1.06)}
+.cover.foto .emo{display:none}
 </style>
 </head>
 <body>
@@ -297,11 +301,12 @@ function vote(c,e){
 grid.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('card')){e.preventDefault();vote(e.target)}});
 document.getElementById('reset').onclick=()=>{votes={};try{localStorage.removeItem('votos')}catch(x){}paint()};
 if(sbOn){document.getElementById('reset').parentElement.style.display='none';cargar();setInterval(cargar,15000);}
+const slug=n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 function render(f){
   filtro=f;
   grid.innerHTML=comidas.filter(d=>f==='todos'||d.c===f).map(d=>`
   <article class="card" tabindex="0" data-comida="${d.n}" aria-label="${d.n}: toca para votar">
-    <div class="cover" style="background-image:var(--leaves),linear-gradient(135deg,${d.g.split(',')[0]},${d.g.split(',')[1]})" aria-hidden="true">${d.e}</div>
+    <div class="cover" style="background-image:var(--leaves),linear-gradient(135deg,${d.g.split(',')[0]},${d.g.split(',')[1]})" ><span class="emo" aria-hidden="true">${d.e}</span><img src="img/${slug(d.n)}.jpg" alt="${d.n}" loading="lazy" onload="this.parentNode.classList.add('foto')" onerror="this.remove()"></div>
     <div class="body">
       <h3>${d.n}</h3><div class="pais">${d.k}</div><p>${d.d}</p>
       <div class="tags">${d.t.map(t=>`<span>${t}</span>`).join('')}</div>
